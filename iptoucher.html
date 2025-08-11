@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Address and Location Details</title>
+    <title>Secret Settings - IP Details</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -29,22 +29,17 @@
             margin-bottom: 1.5rem;
             font-size: 1.8rem;
         }
-        .info-list {
-            max-height: 300px;
-            overflow-y: auto;
-            text-align: left;
-            margin: 1rem 0;
-            padding: 0 1rem;
+        p {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin: 0.5rem 0;
         }
-        .info-item {
+        .info {
             font-size: 1rem;
             color: #4ea8de;
-            margin: 0.5rem 0;
             word-break: break-all;
-        }
-        .info-label {
-            color: #b0b0b0;
-            font-weight: bold;
+            text-align: left;
+            margin: 0.5rem 0;
         }
         button {
             margin-top: 1rem;
@@ -66,28 +61,60 @@
             color: #b0b0b0;
             margin-top: 1rem;
         }
-        .privacy-notice {
+        .footer {
             font-size: 0.9rem;
             color: #b0b0b0;
             margin-top: 1rem;
+        }
+        .footer a {
+            color: #4ea8de;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>IP Address and Location Details</h1>
-        <div class="info-list" id="info-list">
-            <p class="info-item">Fetching...</p>
-        </div>
+        <h1>Secret Settings - IP Details</h1>
+        <p>IP Address:</p>
+        <p class="info" id="ip-address">Fetching...</p>
+        <p>City:</p>
+        <p class="info" id="city">Fetching...</p>
+        <p>Region:</p>
+        <p class="info" id="region">Fetching...</p>
+        <p>Country:</p>
+        <p class="info" id="country">Fetching...</p>
+        <p>ISP:</p>
+        <p class="info" id="isp">Fetching...</p>
+        <p>Organization:</p>
+        <p class="info" id="org">Fetching...</p>
+        <p>Latitude:</p>
+        <p class="info" id="latitude">Fetching...</p>
+        <p>Longitude:</p>
+        <p class="info" id="longitude">Fetching...</p>
+        <p>Postal Code:</p>
+        <p class="info" id="postal">Fetching...</p>
+        <p>Timezone:</p>
+        <p class="info" id="timezone">Fetching...</p>
+        <p>ASN:</p>
+        <p class="info" id="asn">Fetching...</p>
+        <p>User Agent:</p>
+        <p class="info" id="user-agent">Fetching...</p>
         <p id="status"></p>
-        <button onclick="fetchIPAndLocation()">Refresh</button>
-        <p class="privacy-notice">Your IP and location data are saved for analytics purposes.</p>
+        <button onclick="fetchIPAndDetails()">Refresh</button>
+        <button onclick="downloadData()">Download Data</button>
+        <p class="footer">Your IP and location details are saved for analytics. Powered by <a href="https://ipapi.co">ipapi.co</a>.</p>
     </div>
     <script>
-        async function fetchIPAndLocation() {
-            const infoList = document.getElementById('info-list');
+        async function fetchIPAndDetails() {
+            const fields = [
+                'ip-address', 'city', 'region', 'country', 'isp', 
+                'org', 'latitude', 'longitude', 'postal', 'timezone', 'asn', 'user-agent'
+            ];
             const statusDisplay = document.getElementById('status');
-            infoList.innerHTML = '<p class="info-item">Fetching...</p>';
+            fields.forEach(id => document.getElementById(id).textContent = 'Fetching...');
             statusDisplay.textContent = '';
 
             try {
@@ -95,69 +122,107 @@
                 const ipResponse = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipResponse.json();
                 const ip = ipData.ip;
+                document.getElementById('ip-address').textContent = ip;
 
-                // Fetch detailed location data
-                const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
-                const locationData = await locationResponse.json();
-                if (locationData.error) {
-                    throw new Error(locationData.reason || 'Location fetch failed');
+                // Fetch detailed IP information
+                const detailsResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+                const detailsData = await detailsResponse.json();
+                if (detailsData.error) {
+                    throw new Error(detailsData.reason || 'Details fetch failed');
                 }
 
-                // Prepare data for display and storage
+                // Display details
+                document.getElementById('city').textContent = detailsData.city || 'Unknown';
+                document.getElementById('region').textContent = detailsData.region || 'Unknown';
+                document.getElementById('country').textContent = detailsData.country_name || 'Unknown';
+                document.getElementById('isp').textContent = detailsData.isp || 'Unknown';
+                document.getElementById('org').textContent = detailsData.org || 'Unknown';
+                document.getElementById('latitude').textContent = detailsData.latitude || 'Unknown';
+                document.getElementById('longitude').textContent = detailsData.longitude || 'Unknown';
+                document.getElementById('postal').textContent = detailsData.postal || 'Unknown';
+                document.getElementById('timezone').textContent = detailsData.timezone || 'Unknown';
+                document.getElementById('asn').textContent = detailsData.asn || 'Unknown';
+                document.getElementById('user-agent').textContent = navigator.userAgent || 'Unknown';
+
+                // Prepare data for storage
                 const data = {
-                    ip: ip,
-                    city: locationData.city || 'Unknown',
-                    region: locationData.region || 'Unknown',
-                    country: locationData.country_name || 'Unknown',
-                    latitude: locationData.latitude || 'Unknown',
-                    longitude: locationData.longitude || 'Unknown',
-                    timezone: locationData.timezone || 'Unknown',
-                    isp: locationData.isp || 'Unknown',
-                    org: locationData.org || 'Unknown',
-                    asn: locationData.asn || 'Unknown',
-                    postal: locationData.postal || 'Unknown',
-                    country_code: locationData.country_code || 'Unknown',
-                    region_code: locationData.region_code || 'Unknown'
+                    ip,
+                    city: detailsData.city || 'Unknown',
+                    region: detailsData.region || 'Unknown',
+                    country: detailsData.country_name || 'Unknown',
+                    isp: detailsData.isp || 'Unknown',
+                    org: detailsData.org || 'Unknown',
+                    latitude: detailsData.latitude || 'Unknown',
+                    longitude: detailsData.longitude || 'Unknown',
+                    postal: detailsData.postal || 'Unknown',
+                    timezone: detailsData.timezone || 'Unknown',
+                    asn: detailsData.asn || 'Unknown',
+                    userAgent: navigator.userAgent || 'Unknown',
+                    timestamp: new Date().toISOString()
                 };
 
-                // Display data
-                infoList.innerHTML = `
-                    <p class="info-item"><span class="info-label">IP Address:</span> ${data.ip}</p>
-                    <p class="info-item"><span class="info-label">City:</span> ${data.city}</p>
-                    <p class="info-item"><span class="info-label">Region:</span> ${data.region}</p>
-                    <p class="info-item"><span class="info-label">Country:</span> ${data.country}</p>
-                    <p class="info-item"><span class="info-label">Latitude:</span> ${data.latitude}</p>
-                    <p class="info-item"><span class="info-label">Longitude:</span> ${data.longitude}</p>
-                    <p class="info-item"><span class="info-label">Timezone:</span> ${data.timezone}</p>
-                    <p class="info-item"><span class="info-label">ISP:</span> ${data.isp}</p>
-                    <p class="info-item"><span class="info-label">Organization:</span> ${data.org}</p>
-                    <p class="info-item"><span class="info-label">ASN:</span> ${data.asn}</p>
-                    <p class="info-item"><span class="info-label">Postal Code:</span> ${data.postal}</p>
-                    <p class="info-item"><span class="info-label">Country Code:</span> ${data.country_code}</p>
-                    <p class="info-item"><span class="info-label">Region Code:</span> ${data.region_code}</p>
-                `;
+                // Save to localStorage (client-side)
+                localStorage.setItem(`visitor_${Date.now()}`, JSON.stringify(data));
 
-                // Send data to backend
-                const backendResponse = await fetch('https://your-backend.onrender.com/save-ip-location', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const backendData = await backendResponse.json();
-                if (backendResponse.ok) {
-                    statusDisplay.textContent = 'Data saved successfully!';
-                } else {
-                    throw new Error(backendData.error || 'Failed to save data');
+                // Send data to Google Apps Script (server-side storage)
+                try {
+                    const backendResponse = await fetch('https://script.google.com/macros/s/AKfycbyjCdiDY9a22Ml3aGM_L7shsnY1mwGafqKNMoGEO00xel1UUC9g9tUDq3uS8oZIi8xQ4Q/exec', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const backendData = await backendResponse.json();
+                    if (backendResponse.ok && backendData.status === 'success') {
+                        statusDisplay.textContent = 'Data saved successfully!';
+                    } else {
+                        throw new Error(backendData.error || 'Failed to save data');
+                    }
+                } catch (error) {
+                    statusDisplay.textContent = 'Error saving data: ' + error.message;
+                    console.error('Error:', error);
                 }
+
+                // Store data for download
+                window.visitorData = data;
             } catch (error) {
-                infoList.innerHTML = '<p class="info-item">Error fetching data</p>';
+                fields.forEach(id => document.getElementById(id).textContent = 'Error fetching data');
                 statusDisplay.textContent = 'Error: ' + error.message;
                 console.error('Error:', error);
             }
         }
 
-        // Fetch IP and location on page load
-        fetchIPAndLocation();
+        function downloadData() {
+            if (!window.visitorData) {
+                alert('No data available to download');
+                return;
+            }
+            const data = window.visitorData;
+            const text = [
+                `IP Address: ${data.ip}`,
+                `City: ${data.city}`,
+                `Region: ${data.region}`,
+                `Country: ${data.country}`,
+                `ISP: ${data.isp}`,
+                `Organization: ${data.org}`,
+                `Latitude: ${data.latitude}`,
+                `Longitude: ${data.longitude}`,
+                `Postal Code: ${data.postal}`,
+                `Timezone: ${data.timezone}`,
+                `ASN: ${data.asn}`,
+                `User Agent: ${data.userAgent}`,
+                `Timestamp: ${data.timestamp}`
+            ].join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `visitor_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Fetch IP and details on page load
+        fetchIPAndDetails();
     </script>
 </body>
 </html>
