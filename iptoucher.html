@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Address and Location</title>
+    <title>IP Address and Location Details</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -29,15 +29,22 @@
             margin-bottom: 1.5rem;
             font-size: 1.8rem;
         }
-        p {
-            font-size: 1.2rem;
-            color: #b0b0b0;
-            margin: 0.5rem 0;
+        .info-list {
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+            margin: 1rem 0;
+            padding: 0 1rem;
         }
-        #ip-address, #location {
-            font-size: 1.5rem;
+        .info-item {
+            font-size: 1rem;
             color: #4ea8de;
+            margin: 0.5rem 0;
             word-break: break-all;
+        }
+        .info-label {
+            color: #b0b0b0;
+            font-weight: bold;
         }
         button {
             margin-top: 1rem;
@@ -54,43 +61,97 @@
         button:hover {
             background: #4ea8de;
         }
+        #status {
+            font-size: 1rem;
+            color: #b0b0b0;
+            margin-top: 1rem;
+        }
+        .privacy-notice {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>IP Address and Location</h1>
-        <p>Your IP Address:</p>
-        <p id="ip-address">Fetching...</p>
-        <p>Your Location:</p>
-        <p id="location">Fetching...</p>
+        <h1>IP Address and Location Details</h1>
+        <div class="info-list" id="info-list">
+            <p class="info-item">Fetching...</p>
+        </div>
+        <p id="status"></p>
         <button onclick="fetchIPAndLocation()">Refresh</button>
+        <p class="privacy-notice">Your IP and location data are saved for analytics purposes.</p>
     </div>
     <script>
         async function fetchIPAndLocation() {
-            const ipDisplay = document.getElementById('ip-address');
-            const locationDisplay = document.getElementById('location');
-            ipDisplay.textContent = 'Fetching...';
-            locationDisplay.textContent = 'Fetching...';
+            const infoList = document.getElementById('info-list');
+            const statusDisplay = document.getElementById('status');
+            infoList.innerHTML = '<p class="info-item">Fetching...</p>';
+            statusDisplay.textContent = '';
 
             try {
                 // Fetch IP address
                 const ipResponse = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipResponse.json();
                 const ip = ipData.ip;
-                ipDisplay.textContent = ip;
 
-                // Fetch location data using IP
+                // Fetch detailed location data
                 const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
                 const locationData = await locationResponse.json();
                 if (locationData.error) {
                     throw new Error(locationData.reason || 'Location fetch failed');
                 }
-                const city = locationData.city || 'Unknown';
-                const country = locationData.country_name || 'Unknown';
-                locationDisplay.textContent = `${city}, ${country}`;
+
+                // Prepare data for display and storage
+                const data = {
+                    ip: ip,
+                    city: locationData.city || 'Unknown',
+                    region: locationData.region || 'Unknown',
+                    country: locationData.country_name || 'Unknown',
+                    latitude: locationData.latitude || 'Unknown',
+                    longitude: locationData.longitude || 'Unknown',
+                    timezone: locationData.timezone || 'Unknown',
+                    isp: locationData.isp || 'Unknown',
+                    org: locationData.org || 'Unknown',
+                    asn: locationData.asn || 'Unknown',
+                    postal: locationData.postal || 'Unknown',
+                    country_code: locationData.country_code || 'Unknown',
+                    region_code: locationData.region_code || 'Unknown'
+                };
+
+                // Display data
+                infoList.innerHTML = `
+                    <p class="info-item"><span class="info-label">IP Address:</span> ${data.ip}</p>
+                    <p class="info-item"><span class="info-label">City:</span> ${data.city}</p>
+                    <p class="info-item"><span class="info-label">Region:</span> ${data.region}</p>
+                    <p class="info-item"><span class="info-label">Country:</span> ${data.country}</p>
+                    <p class="info-item"><span class="info-label">Latitude:</span> ${data.latitude}</p>
+                    <p class="info-item"><span class="info-label">Longitude:</span> ${data.longitude}</p>
+                    <p class="info-item"><span class="info-label">Timezone:</span> ${data.timezone}</p>
+                    <p class="info-item"><span class="info-label">ISP:</span> ${data.isp}</p>
+                    <p class="info-item"><span class="info-label">Organization:</span> ${data.org}</p>
+                    <p class="info-item"><span class="info-label">ASN:</span> ${data.asn}</p>
+                    <p class="info-item"><span class="info-label">Postal Code:</span> ${data.postal}</p>
+                    <p class="info-item"><span class="info-label">Country Code:</span> ${data.country_code}</p>
+                    <p class="info-item"><span class="info-label">Region Code:</span> ${data.region_code}</p>
+                `;
+
+                // Send data to backend
+                const backendResponse = await fetch('https://your-backend.onrender.com/save-ip-location', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const backendData = await backendResponse.json();
+                if (backendResponse.ok) {
+                    statusDisplay.textContent = 'Data saved successfully!';
+                } else {
+                    throw new Error(backendData.error || 'Failed to save data');
+                }
             } catch (error) {
-                ipDisplay.textContent = 'Error fetching IP';
-                locationDisplay.textContent = 'Error fetching location';
+                infoList.innerHTML = '<p class="info-item">Error fetching data</p>';
+                statusDisplay.textContent = 'Error: ' + error.message;
                 console.error('Error:', error);
             }
         }
