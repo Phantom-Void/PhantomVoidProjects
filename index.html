@@ -66,6 +66,26 @@
             font-size: 0.9rem;
             color: #b0b0b0;
         }
+        .secret-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            background: #e63946; /* Red color */
+            color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, transform 0.3s;
+        }
+        .secret-button:hover {
+            background: #d00000; /* Darker red on hover */
+            transform: translateX(-50%) translateY(-5px);
+        }
     </style>
 </head>
 <body>
@@ -78,10 +98,6 @@
             <h2>Password Generator</h2>
             <p>Create secure passwords with customizable options</p>
         </a>
-        <a href="./iptoucher.html" class="nav-box">
-            <h2>Secret Settings</h2>
-            <p>Super Secret!</p>
-        </a>
         <a href="./shape_generator.html" class="nav-box">
             <h2>Random Shape Generator</h2>
             <p>Customize and generate a unique polygon shape!</p>
@@ -90,5 +106,6 @@
     <footer>
         <p>&copy;&copy;&copy;&copy;&copy;&copy;&copy;&copy;hehehe&copy;&copy;&copy; 2025 My Portfolio. All rights reserved.  </p>
     </footer>
+    <a href="./iptoucher.html" class="secret-button">Secret Settings</a>
 </body>
 </html>
