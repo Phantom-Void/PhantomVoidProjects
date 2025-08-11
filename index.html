@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website - Home</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #2b2d42, #1f2a44);
+            color: #e0e0e0;
+        }
+        .container {
+            background: #1e1e2f;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+        .nav-boxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .nav-box {
+            background: #2b2d42;
+            padding: 1.5rem;
+            border: 1px solid #444;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #e0e0e0;
+            transition: background 0.3s, transform 0.2s;
+            cursor: pointer;
+        }
+        .nav-box:hover {
+            background: #4ea8de;
+            transform: translateY(-5px);
+        }
+        .nav-box h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .nav-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to My Website</h1>
+        <div class="nav-boxes">
+            <a href="./password_generator.html" class="nav-box">
+                <h2>Password Generator</h2>
+                <p>Create secure, customizable passwords with options for length, character types, and specific text inclusion.</p>
+            </a>
+            <!-- Add more boxes as needed -->
+            <a href="#" class="nav-box">
+                <h2>Coming Soon</h2>
+                <p>Explore new tools and features in development for your productivity and creativity.</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
