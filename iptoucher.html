@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Address and Location</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #2b2d42, #1f2a44);
+            color: #e0e0e0;
+        }
+        .container {
+            background: #1e1e2f;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        p {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin: 0.5rem 0;
+        }
+        #ip-address, #location {
+            font-size: 1.5rem;
+            color: #4ea8de;
+            word-break: break-all;
+        }
+        button {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 0.75rem;
+            background: #5e60ce;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #4ea8de;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IP Address and Location</h1>
+        <p>Your IP Address:</p>
+        <p id="ip-address">Fetching...</p>
+        <p>Your Location:</p>
+        <p id="location">Fetching...</p>
+        <button onclick="fetchIPAndLocation()">Refresh</button>
+    </div>
+    <script>
+        async function fetchIPAndLocation() {
+            const ipDisplay = document.getElementById('ip-address');
+            const locationDisplay = document.getElementById('location');
+            ipDisplay.textContent = 'Fetching...';
+            locationDisplay.textContent = 'Fetching...';
+
+            try {
+                // Fetch IP address
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                const ip = ipData.ip;
+                ipDisplay.textContent = ip;
+
+                // Fetch location data using IP
+                const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+                const locationData = await locationResponse.json();
+                if (locationData.error) {
+                    throw new Error(locationData.reason || 'Location fetch failed');
+                }
+                const city = locationData.city || 'Unknown';
+                const country = locationData.country_name || 'Unknown';
+                locationDisplay.textContent = `${city}, ${country}`;
+            } catch (error) {
+                ipDisplay.textContent = 'Error fetching IP';
+                locationDisplay.textContent = 'Error fetching location';
+                console.error('Error:', error);
+            }
+        }
+
+        // Fetch IP and location on page load
+        fetchIPAndLocation();
+    </script>
+</body>
+</html>
