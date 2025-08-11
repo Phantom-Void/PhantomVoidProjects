@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Shape Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #2b2d42, #1f2a44);
+            color: #e0e0e0;
+        }
+        .container {
+            background: #1e1e2f;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        canvas {
+            border: 1px solid #444;
+            background: #2b2d42;
+            margin-bottom: 1rem;
+        }
+        .input-group {
+            margin: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        label {
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+        select, input[type="range"] {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            background: #2b2d42;
+            color: #e0e0e0;
+            font-size: 1rem;
+            width: 60%;
+        }
+        input[type="range"] {
+            width: 55%;
+        }
+        button {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 0.75rem;
+            background: #5e60ce;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #4ea8de;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random Shape Generator</h1>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <div class="input-group">
+            <label for="color">Color:</label>
+            <select id="color">
+                <option value="#5e60ce">Purple</option>
+                <option value="#4ea8de">Blue</option>
+                <option value="#e0e0e0">White</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="sides">Sides (3-20):</label>
+            <input type="range" id="sides" min="3" max="20" value="5">
+        </div>
+        <div class="input-group">
+            <label for="symmetry">Symmetry:</label>
+            <select id="symmetry">
+                <option value="symmetric">Symmetric</option>
+                <option value="asymmetric">Asymmetric</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="size">Size:</label>
+            <select id="size">
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="convexity">Shape Type:</label>
+            <select id="convexity">
+                <option value="convex">Convex</option>
+                <option value="concave">Concave</option>
+            </select>
+        </div>
+        <button onclick="generateShape()">Generate Shape</button>
+        <button onclick="saveAsPNG()">Save as PNG</button>
+    </div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colorSelect = document.getElementById('color');
+        const sidesInput = document.getElementById('sides');
+        const symmetrySelect = document.getElementById('symmetry');
+        const sizeSelect = document.getElementById('size');
+        const convexitySelect = document.getElementById('convexity');
+
+        function generateShape() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const color = colorSelect.value;
+            const sides = parseInt(sidesInput.value);
+            const symmetry = symmetrySelect.value;
+            const size = sizeSelect.value;
+            const convexity = convexitySelect.value;
+
+            // Determine scale based on size
+            let scale;
+            if (size === 'small') scale = 50;
+            else if (size === 'medium') scale = 100;
+            else scale = 150;
+
+            // Center of canvas
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 2;
+
+            // Generate vertices
+            const vertices = [];
+            if (symmetry === 'symmetric') {
+                // Regular polygon for symmetric shapes
+                for (let i = 0; i < sides; i++) {
+                    const angle = (2 * Math.PI * i) / sides;
+                    let radius = scale;
+                    if (convexity === 'concave' && i % 2 === 1) {
+                        radius *= 0.5; // Inward vertices for concave effect
+                    }
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    vertices.push({ x, y });
+                }
+            } else {
+                // Asymmetric shape with random perturbations
+                for (let i = 0; i < sides; i++) {
+                    const angle = (2 * Math.PI * i) / sides + (Math.random() - 0.5) * 0.3; // Slight angle variation
+                    let radius = scale * (0.7 + Math.random() * 0.3); // Random radius variation
+                    if (convexity === 'concave' && i % 2 === 1) {
+                        radius *= 0.5; // Inward vertices for concave effect
+                    }
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    vertices.push({ x, y });
+                }
+            }
+
+            // Draw the shape
+            ctx.moveTo(vertices[0].x, vertices[0].y);
+            for (let i = 1; i < vertices.length; i++) {
+                ctx.lineTo(vertices[i].x, vertices[i].y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function saveAsPNG() {
+            const link = document.createElement('a');
+            link.download = 'shape.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Click to generate shape
+        canvas.addEventListener('click', generateShape);
+
+        // Initial generation
+        generateShape();
+    </script>
+</body>
+</html>
