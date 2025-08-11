@@ -1,2 +1,3 @@
-# friendly-spork-maze-gen-ai-
-i am attempting to creat a random maze genorator that is playable and uses ai
+# Wsp 
+
+This is kinda just a website i made with cool stuff!
