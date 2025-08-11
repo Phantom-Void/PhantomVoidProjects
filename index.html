@@ -2,191 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>20x20 Random Maze Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Password Generator</title>
     <style>
-        canvas {
-            border: 1px solid black;
-        }
         body {
+            font-family: 'Segoe UI', Arial, sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #333;
         }
-        #instructions {
-            margin-top: 10px;
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        input[type="number"],
+        input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #764ba2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #667eea;
+        }
+        #passwordOutput {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            word-break: break-all;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
     </style>
 </head>
 <body>
-    <canvas id="mazeCanvas" width="400" height="400"></canvas>
-    <div id="instructions">Use arrow keys to move. Reach the red exit!</div>
+    <div class="container">
+        <h1>Random Password Generator</h1>
+        <div class="input-group">
+            <label for="length">Password Length (8-50):</label>
+            <input type="number" id="length" min="8" max="50" value="12">
+        </div>
+        <div class="input-group">
+            <label>Character Types:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="uppercase" checked> Uppercase</label>
+                <label><input type="checkbox" id="lowercase" checked> Lowercase</label>
+                <label><input type="checkbox" id="numbers" checked> Numbers</label>
+                <label><input type="checkbox" id="symbols" checked> Symbols</label>
+            </div>
+        </div>
+        <button onclick="generatePassword()">Generate Password</button>
+        <div id="passwordOutput">Click Generate to create a password</div>
+    </div>
     <script>
-        const canvas = document.getElementById('mazeCanvas');
-        const ctx = canvas.getContext('2d');
-        const gridSize = 20;
-        const cellSize = canvas.width / gridSize;
-        let maze = [];
-        let player = { x: 1, y: 1 };
-        let exit = { x: 19, y: 19 };
+        function generatePassword() {
+            const length = parseInt(document.getElementById('length').value);
+            const includeUppercase = document.getElementById('uppercase').checked;
+            const includeLowercase = document.getElementById('lowercase').checked;
+            const includeNumbers = document.getElementById('numbers').checked;
+            const includeSymbols = document.getElementById('symbols').checked;
+            const output = document.getElementById('passwordOutput');
 
-        // Initialize maze with walls
-        function initMaze() {
-            maze = [];
-            for (let y = 0; y < gridSize; y++) {
-                let row = [];
-                for (let x = 0; x < gridSize; x++) {
-                    row.push({ walls: [true, true, true, true], visited: false }); // top, right, bottom, left
-                }
-                maze.push(row);
+            // Validate inputs
+            if (length < 8 || length > 50) {
+                output.textContent = 'Please select a length between 8 and 50.';
+                return;
             }
-        }
-
-        // Generate maze using depth-first search
-        function generateMaze() {
-            initMaze();
-            let stack = [];
-            let current = { x: 1, y: 1 };
-            maze[current.y][current.x].visited = true;
-            stack.push(current);
-
-            while (stack.length > 0) {
-                let neighbors = getUnvisitedNeighbors(current.x, current.y);
-                if (neighbors.length > 0) {
-                    let next = neighbors[Math.floor(Math.random() * neighbors.length)];
-                    removeWall(current, next);
-                    maze[next.y][next.x].visited = true;
-                    stack.push(next);
-                    current = next;
-                } else {
-                    current = stack.pop();
-                }
-            }
-        }
-
-        // Get unvisited neighbors of a cell
-        function getUnvisitedNeighbors(x, y) {
-            let neighbors = [];
-            const directions = [
-                { x: 0, y: -1, wall: 0, oppWall: 2 }, // up
-                { x: 1, y: 0, wall: 1, oppWall: 3 },  // right
-                { x: 0, y: 1, wall: 2, oppWall: 0 },  // down
-                { x: -1, y: 0, wall: 3, oppWall: 1 }   // left
-            ];
-
-            for (let dir of directions) {
-                let nx = x + dir.x;
-                let ny = y + dir.y;
-                if (nx > 0 && nx < gridSize - 1 && ny > 0 && ny < gridSize - 1 && !maze[ny][nx].visited) {
-                    neighbors.push({ x: nx, y: ny, wall: dir.wall, oppWall: dir.oppWall });
-                }
-            }
-            return neighbors;
-        }
-
-        // Remove walls between two cells
-        function removeWall(current, next) {
-            maze[current.y][current.x].walls[next.wall] = false;
-            maze[next.y][next.x].walls[next.oppWall] = false;
-        }
-
-        // Draw the maze
-        function drawMaze() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = 2;
-
-            for (let y = 0; y < gridSize; y++) {
-                for (let x = 0; x < gridSize; x++) {
-                    let cell = maze[y][x];
-                    let px = x * cellSize;
-                    let py = y * cellSize;
-
-                    ctx.beginPath();
-                    if (cell.walls[0]) { // top
-                        ctx.moveTo(px, py);
-                        ctx.lineTo(px + cellSize, py);
-                    }
-                    if (cell.walls[1]) { // right
-                        ctx.moveTo(px + cellSize, py);
-                        ctx.lineTo(px + cellSize, py + cellSize);
-                    }
-                    if (cell.walls[2]) { // bottom
-                        ctx.moveTo(px, py + cellSize);
-                        ctx.lineTo(px + cellSize, py + cellSize);
-                    }
-                    if (cell.walls[3]) { // left
-                        ctx.moveTo(px, py);
-                        ctx.lineTo(px, py + cellSize);
-                    }
-                    ctx.stroke();
-                }
+            if (!includeUppercase && !includeLowercase && !includeNumbers && !includeSymbols) {
+                output.textContent = 'Please select at least one character type.';
+                return;
             }
 
-            // Draw player
-            ctx.fillStyle = 'blue';
-            ctx.fillRect(player.x * cellSize + 2, player.y * cellSize + 2, cellSize - 4, cellSize - 4);
+            // Character sets
+            const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
 
-            // Draw exit
-            ctx.fillStyle = 'red';
-            ctx.fillRect(exit.x * cellSize + 2, exit.y * cellSize + 2, cellSize - 4, cellSize - 4);
-        }
+            // Build character pool
+            let chars = '';
+            if (includeUppercase) chars += uppercase;
+            if (includeLowercase) chars += lowercase;
+            if (includeNumbers) chars += numbers;
+            if (includeSymbols) chars += symbols;
 
-        // Handle player movement
-        function movePlayer(dx, dy) {
-            let newX = player.x + dx;
-            let newY = player.y + dy;
+            // Ensure at least one character from each selected type
+            let password = '';
+            if (includeUppercase) password += uppercase[Math.floor(Math.random() * uppercase.length)];
+            if (includeLowercase) password += lowercase[Math.floor(Math.random() * lowercase.length)];
+            if (includeNumbers) password += numbers[Math.floor(Math.random() * numbers.length)];
+            if (includeSymbols) password += symbols[Math.floor(Math.random() * symbols.length)];
 
-            if (newX < 0 || newX >= gridSize || newY < 0 || newY >= gridSize) return;
-
-            // Check if movement is blocked by a wall
-            if (dx === 1 && maze[player.y][player.x].walls[1]) return; // moving right
-            if (dx === -1 && maze[player.y][player.x].walls[3]) return; // moving left
-            if (dy === 1 && maze[player.y][player.x].walls[2]) return; // moving down
-            if (dy === -1 && maze[player.y][player.x].walls[0]) return; // moving up
-
-            player.x = newX;
-            player.y = newY;
-
-            drawMaze();
-
-            // Check for win condition
-            if (player.x === exit.x && player.y === exit.y) {
-                setTimeout(() => {
-                    alert('Congratulations! You reached the exit!');
-                    resetGame();
-                }, 100);
+            // Fill remaining length with random characters
+            for (let i = password.length; i < length; i++) {
+                password += chars[Math.floor(Math.random() * chars.length)];
             }
+
+            // Shuffle the password
+            password = password.split('').sort(() => Math.random() - 0.5).join('');
+
+            output.textContent = password;
         }
-
-        // Reset game
-        function resetGame() {
-            player = { x: 1, y: 1 };
-            generateMaze();
-            drawMaze();
-        }
-
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            switch (e.key) {
-                case 'ArrowUp':
-                    movePlayer(0, -1);
-                    break;
-                case 'ArrowDown':
-                    movePlayer(0, 1);
-                    break;
-                case 'ArrowLeft':
-                    movePlayer(-1, 0);
-                    break;
-                case 'ArrowRight':
-                    movePlayer(1, 0);
-                    break;
-            }
-        });
-
-        // Start the game
-        generateMaze();
-        drawMaze();
     </script>
 </body>
 </html>
