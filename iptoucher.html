@@ -86,9 +86,7 @@
         <p class="info" id="region">Fetching...</p>
         <p>Country:</p>
         <p class="info" id="country">Fetching...</p>
-        <p>ISP:</p>
-        <p class="info" id="isp">Fetching...</p>
-        <p>Organization:</p>
+        <p>ISP/Organization:</p>
         <p class="info" id="org">Fetching...</p>
         <p>Latitude:</p>
         <p class="info" id="latitude">Fetching...</p>
@@ -100,18 +98,30 @@
         <p class="info" id="timezone">Fetching...</p>
         <p>ASN:</p>
         <p class="info" id="asn">Fetching...</p>
+        <p>Hostname:</p>
+        <p class="info" id="hostname">Fetching...</p>
         <p>User Agent:</p>
         <p class="info" id="user-agent">Fetching...</p>
+        <p>Browser Language:</p>
+        <p class="info" id="language">Fetching...</p>
+        <p>Screen Resolution:</p>
+        <p class="info" id="screen">Fetching...</p>
+        <p>Device Memory:</p>
+        <p class="info" id="device-memory">Fetching...</p>
+        <p>Connection Type:</p>
+        <p class="info" id="connection">Fetching...</p>
         <p id="status"></p>
         <button onclick="fetchIPAndDetails()">Refresh</button>
         <button onclick="downloadData()">Download Data</button>
-        <p class="footer">Your IP and location details are saved for analytics. Powered by <a href="https://ipapi.co">ipapi.co</a>.</p>
+        <p class="footer">Your IP and device details are saved locally for analytics. Powered by <a href="https://ipinfo.io">ipinfo.io</a>.</p>
     </div>
     <script>
         async function fetchIPAndDetails() {
             const fields = [
-                'ip-address', 'city', 'region', 'country', 'isp', 
-                'org', 'latitude', 'longitude', 'postal', 'timezone', 'asn', 'user-agent'
+                'ip-address', 'city', 'region', 'country', 'org', 
+                'latitude', 'longitude', 'postal', 'timezone', 'asn', 
+                'hostname', 'user-agent', 'language', 'screen', 
+                'device-memory', 'connection'
             ];
             const statusDisplay = document.getElementById('status');
             fields.forEach(id => document.getElementById(id).textContent = 'Fetching...');
@@ -125,62 +135,53 @@
                 document.getElementById('ip-address').textContent = ip;
 
                 // Fetch detailed IP information
-                const detailsResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+                const detailsResponse = await fetch(`https://ipinfo.io/${ip}/json?token=your_ipinfo_token`);
                 const detailsData = await detailsResponse.json();
-                if (detailsData.error) {
-                    throw new Error(detailsData.reason || 'Details fetch failed');
-                }
 
-                // Display details
+                // Display IP details
                 document.getElementById('city').textContent = detailsData.city || 'Unknown';
                 document.getElementById('region').textContent = detailsData.region || 'Unknown';
-                document.getElementById('country').textContent = detailsData.country_name || 'Unknown';
-                document.getElementById('isp').textContent = detailsData.isp || 'Unknown';
+                document.getElementById('country').textContent = detailsData.country || 'Unknown';
                 document.getElementById('org').textContent = detailsData.org || 'Unknown';
-                document.getElementById('latitude').textContent = detailsData.latitude || 'Unknown';
-                document.getElementById('longitude').textContent = detailsData.longitude || 'Unknown';
+                document.getElementById('latitude').textContent = detailsData.loc ? detailsData.loc.split(',')[0] : 'Unknown';
+                document.getElementById('longitude').textContent = detailsData.loc ? detailsData.loc.split(',')[1] : 'Unknown';
                 document.getElementById('postal').textContent = detailsData.postal || 'Unknown';
                 document.getElementById('timezone').textContent = detailsData.timezone || 'Unknown';
-                document.getElementById('asn').textContent = detailsData.asn || 'Unknown';
+                document.getElementById('asn').textContent = detailsData.asn ? detailsData.asn.asn : 'Unknown';
+                document.getElementById('hostname').textContent = detailsData.hostname || 'Unknown';
+
+                // Display browser/device details
                 document.getElementById('user-agent').textContent = navigator.userAgent || 'Unknown';
+                document.getElementById('language').textContent = navigator.language || 'Unknown';
+                document.getElementById('screen').textContent = `${window.screen.width}x${window.screen.height}` || 'Unknown';
+                document.getElementById('device-memory').textContent = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'Unknown';
+                document.getElementById('connection').textContent = navigator.connection ? navigator.connection.effectiveType : 'Unknown';
 
                 // Prepare data for storage
                 const data = {
                     ip,
                     city: detailsData.city || 'Unknown',
                     region: detailsData.region || 'Unknown',
-                    country: detailsData.country_name || 'Unknown',
-                    isp: detailsData.isp || 'Unknown',
+                    country: detailsData.country || 'Unknown',
                     org: detailsData.org || 'Unknown',
-                    latitude: detailsData.latitude || 'Unknown',
-                    longitude: detailsData.longitude || 'Unknown',
+                    latitude: detailsData.loc ? detailsData.loc.split(',')[0] : 'Unknown',
+                    longitude: detailsData.loc ? detailsData.loc.split(',')[1] : 'Unknown',
                     postal: detailsData.postal || 'Unknown',
                     timezone: detailsData.timezone || 'Unknown',
-                    asn: detailsData.asn || 'Unknown',
+                    asn: detailsData.asn ? detailsData.asn.asn : 'Unknown',
+                    hostname: detailsData.hostname || 'Unknown',
                     userAgent: navigator.userAgent || 'Unknown',
+                    language: navigator.language || 'Unknown',
+                    screen: `${window.screen.width}x${window.screen.height}` || 'Unknown',
+                    deviceMemory: navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'Unknown',
+                    connection: navigator.connection ? navigator.connection.effectiveType : 'Unknown',
                     timestamp: new Date().toISOString()
                 };
 
-                // Save to localStorage (client-side)
-                localStorage.setItem(`visitor_${Date.now()}`, JSON.stringify(data));
-
-                // Send data to Google Apps Script (server-side storage)
-                try {
-                    const backendResponse = await fetch('https://script.google.com/macros/s/AKfycbyjCdiDY9a22Ml3aGM_L7shsnY1mwGafqKNMoGEO00xel1UUC9g9tUDq3uS8oZIi8xQ4Q/exec', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    const backendData = await backendResponse.json();
-                    if (backendResponse.ok && backendData.status === 'success') {
-                        statusDisplay.textContent = 'Data saved successfully!';
-                    } else {
-                        throw new Error(backendData.error || 'Failed to save data');
-                    }
-                } catch (error) {
-                    statusDisplay.textContent = 'Error saving data: ' + error.message;
-                    console.error('Error:', error);
-                }
+                // Save to localStorage
+                const visitorId = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                localStorage.setItem(visitorId, JSON.stringify(data));
+                statusDisplay.textContent = 'Data saved locally! Click "Download Data" to save as a file.';
 
                 // Store data for download
                 window.visitorData = data;
@@ -202,14 +203,18 @@
                 `City: ${data.city}`,
                 `Region: ${data.region}`,
                 `Country: ${data.country}`,
-                `ISP: ${data.isp}`,
-                `Organization: ${data.org}`,
+                `ISP/Organization: ${data.org}`,
                 `Latitude: ${data.latitude}`,
                 `Longitude: ${data.longitude}`,
                 `Postal Code: ${data.postal}`,
                 `Timezone: ${data.timezone}`,
                 `ASN: ${data.asn}`,
+                `Hostname: ${data.hostname}`,
                 `User Agent: ${data.userAgent}`,
+                `Browser Language: ${data.language}`,
+                `Screen Resolution: ${data.screen}`,
+                `Device Memory: ${data.deviceMemory}`,
+                `Connection Type: ${data.connection}`,
                 `Timestamp: ${data.timestamp}`
             ].join('\n');
             const blob = new Blob([text], { type: 'text/plain' });
