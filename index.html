@@ -5,6 +5,241 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <style>
+        @import url(https://fonts.googleapis.com/css?family=Special+Elite);
+body{background:#000;font-family: 'Special Elite', cursive;}
+.intro-text h2 {
+	font-size: 70px;
+	font-weight: 200;
+	width: 100%;
+	overflow: hidden;
+	text-transform: uppercase;
+	padding: 0;
+	margin: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	letter-spacing: 14px;
+	text-align: center;
+	opacity: 0;
+}
+
+.intro-text h2,
+.intro-text h2 > span {
+	height: 100%;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	-webkit-justify-content: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-webkit-align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+
+.intro-text h2 > span {
+	margin: 0 15px;
+}
+
+.intro-text h2 > span > span {
+	display: inline-block;
+	-webkit-perspective: 1000px;
+	-moz-perspective: 1000px;
+	perspective: 1000px;
+	-webkit-transform-origin: 50% 50%;
+	-moz-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
+}
+
+.intro-text h2 > span > span > span {
+	display: inline-block;
+	color: hsla(0,0%,0%,0);
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	-webkit-transform: translate3d(0,0,0);
+	-moz-transform: translate3d(0,0,0);
+	transform: translate3d(0,0,0);
+	-webkit-animation: TextSequence 5.2s linear forwards;
+	-moz-animation: TextSequence 5.2s linear forwards;
+	animation: TextSequence 5.2s linear forwards;
+}
+
+.intro-text h2:nth-child(2) > span > span > span {
+	-webkit-animation-delay: 5s;
+	-moz-animation-delay: 5s;
+	animation-delay: 5s;
+}
+
+.intro-text h2:nth-child(3) > span > span > span {
+	-webkit-animation-delay: 10s;
+	-moz-animation-delay: 10s;
+	animation-delay: 10s;
+}
+
+.intro-text h2:nth-child(4) > span > span > span {
+	-webkit-animation-delay: 15s;
+	-moz-animation-delay: 15s;
+	animation-delay: 15s;
+}
+
+.intro-text h2:nth-child(5) > span > span > span {
+	font-size: 150px;
+	-webkit-animation-delay: 21s;
+	-moz-animation-delay: 21s;
+	animation-delay: 21s;
+	-webkit-animation-duration: 8s;
+	-moz-animation-duration: 8s;
+	animation-duration: 8s;
+}
+
+.intro-text h2:nth-child(6) > span > span > span {
+	-webkit-animation-delay: 30s;
+	-moz-animation-delay: 30s;
+	animation-delay: 30s;
+}
+
+.intro-text h2:nth-child(7) > span > span > span {
+	-webkit-animation-delay: 34s;
+	-moz-animation-delay: 34s;
+	animation-delay: 34s;
+}
+
+@-webkit-keyframes TextSequence {
+	0% {
+		text-shadow: 0 0 50px #fff;
+		letter-spacing: 80px;
+		opacity: 0;
+		-webkit-transform: rotateY(-90deg);
+	}
+	50% {
+		text-shadow: 0 0 1px #fff;
+		letter-spacing: 14px;
+		opacity: 0.8;
+		-webkit-transform: rotateY(0deg);
+	}
+	85% {
+		text-shadow: 0 0 1px #fff;
+		opacity: 0.8;
+		-webkit-transform: rotateY(0deg) translateZ(100px);
+	}
+	100% {
+		text-shadow: 0 0 10px #fff;
+		opacity: 0;
+		-webkit-transform: translateZ(130px);
+		pointer-events: none;
+	}
+}
+
+@-moz-keyframes TextSequence {
+	0% {
+		text-shadow: 0 0 50px #fff;
+		letter-spacing: 80px;
+		opacity: 0.2;
+		-moz-transform: rotateY(-90deg);
+	}
+	50% {
+		text-shadow: 0 0 1px #fff;
+		letter-spacing: 14px;
+		opacity: 0.8;
+		-moz-transform: rotateY(0deg);
+	}
+	85% {
+		text-shadow: 0 0 1px #fff;
+		opacity: 0.8;
+		-moz-transform: rotateY(0deg) translateZ(100px);
+	}
+	100% {
+		text-shadow: 0 0 10px #fff;
+		opacity: 0;
+		-moz-transform: translateZ(130px);
+		pointer-events: none;
+	}
+}
+
+@keyframes TextSequence {
+	0% {
+		text-shadow: 0 0 50px #fff;
+		letter-spacing: 80px;
+		opacity: 0.2;
+		transform: rotateY(-90deg);
+	}
+	50% {
+		text-shadow: 0 0 1px #fff;
+		letter-spacing: 14px;
+		opacity: 0.8;
+		transform: rotateY(0deg);
+	}
+	85% {
+		text-shadow: 0 0 1px #fff;
+		opacity: 0.8;
+		transform: rotateY(0deg) translateZ(100px);
+	}
+	100% {
+		text-shadow: 0 0 10px #fff;
+		opacity: 0;
+		transform: translateZ(130px);
+		pointer-events: none;
+	}
+}
+
+.intro-text h2:nth-child(8) > span > span > span {
+	font-size: 30px;
+	-webkit-animation: FadeIn 4s linear 40s forwards;
+	-moz-animation: FadeIn 4s linear 40s forwards;
+	animation: FadeIn 4s linear 40s forwards;
+}
+
+@-webkit-keyframes FadeIn { 
+	0% {
+		opacity: 0;
+		text-shadow: 0 0 50px #fff;
+	}
+	100% {
+		opacity: 0.8;
+		text-shadow: 0 0 1px #fff;
+	}
+}
+
+@-moz-keyframes FadeIn { 
+	0% {
+		opacity: 0;
+		text-shadow: 0 0 50px #fff;
+	}
+	100% {
+		opacity: 0.8;
+		text-shadow: 0 0 1px #fff;
+	}
+}
+
+@keyframes FadeIn { 
+	0% {
+		opacity: 0;
+
+
+		text-shadow: 0 0 50px #fff;
+	}
+	100% {
+		opacity: 0.8;
+		text-shadow: 0 0 1px #fff;
+	}
+}
+
+/* Bold Text */
+.intro-text h2:first-child .word3,
+.intro-text h2:nth-child(2) .word2,
+.intro-text h2:nth-child(4) .word2 {
+	font-weight: 600;
+}
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
@@ -86,6 +321,16 @@
             background: #d00000; /* Darker red on hover */
             transform: translateX(-50%) translateY(-5px);
         }
+    <div class="intro-text" id="intro-text">
+				<h2>HELLO THERE</h2>
+				<h2>MY NAME IS</h2>
+				<h2>JOSIAH</h2>
+				<h2>OR</h2>
+				<h2>PHANTOM VOID</h2>
+				<h2>AND I HAD A...</h2>
+				<h2>SPRITE AND SOME FRIES FOR DINNER</h2>
+				<h2>BYE BYE!</h2>
+			</div>
     </style>
 </head>
 <body>
@@ -126,4 +371,35 @@ javascript:(function() {
             document.title = 'Error getting IP';
         });
 })();
+
+$(document).ready(function() {
+$("#intro-text > h2").css('opacity',1).lettering('words').children("span").lettering().children("span").lettering(); 
+})
+
+/*Life's Not Complete Without Art. (Expand Your Editor > ASCII Is Not Responsive ;)
+
+
+                    ,.ood888888888888boo.,
+               .od888P^""            ""^Y888bo.
+           .od8P''   ..oood88888888booo.    ``Y8bo.
+        .odP'"  .ood8888888888888888888888boo.  "`Ybo.
+      .d8'   od8'd888888888f`8888't888888888b`8bo   `Yb.
+     d8'  od8^   8888888888[  `'  ]8888888888   ^8bo  `8b
+   .8P  d88'     8888888888P      Y8888888888     `88b  Y8.
+  d8' .d8'       `Y88888888'      `88888888P'       `8b. `8b
+ .8P .88P            """"            """"            Y88. Y8.
+ 88  888                                              888  88
+ 88  888                                              888  88
+ 88  888.        ..                        ..        .888  88
+ `8b `88b,     d8888b.od8bo.      .od8bo.d8888b     ,d88' d8'
+  Y8. `Y88.    8888888888888b    d8888888888888    .88P' .8P
+   `8b  Y88b.  `88888888888888  88888888888888'  .d88P  d8'
+     Y8.  ^Y88bod8888888888888..8888888888888bod88P^  .8P
+      `Y8.   ^Y888888888888888LS888888888888888P^   .8P'
+        `^Yb.,  `^^Y8888888888888888888888P^^'  ,.dP^'
+           `^Y8b..   ``^^^Y88888888P^^^'    ..d8P^'
+               `^Y888bo.,            ,.od888P^'
+                    "`^^Y8888TMR8888P^^'"  
+|I'm Batman|
+*/
 </script>                                                             
